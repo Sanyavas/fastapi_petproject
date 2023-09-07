@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <br>
+    <div class="text-center">
+        <a href="/">
+            <img class="blurred-edge" src="https://i.pinimg.com/originals/06/6c/fa/066cfa6fb310bcc93721f5baf26a56db.jpg"
+                 height="350">
+        </a>
+    </div>
+    <br>
+    <div class="text-center">
+        <a style="margin-left: 7cm;">
+            <img src="https://readme-typing-svg.herokuapp.com?color=F7C500&pause=2000&weight=700&lines=MAY+THE+FORCE+BE+WITH+YOU..."
+                 height="100">
+        </a>
+    </div>
+    {% for post in posts %}
+    <div class="alert alert-dismissible alert-primary" role="alert">
+        <div class="row">
+            <div class="col-3">
+                <img src="{{post.image_url}}" height="280">
+            </div>
+            <div class="col-9">
+
+                <p><strong>id:</strong> {{post.id}}</p>
+                <div><strong>title:</strong></div>
+                <h3>{{post.title}}</h3>
+                <div><strong>post:</strong></div>
+                <h3>{{post.post}}</h3>
+                <div><strong>author:</strong> {{post.author}}</div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-light disabled"><strong>Views</strong>: {{post.views}}</button>
+                    <button type="button" class="btn btn-outline-success" onclick="likePost({{post.id}})">
+                        <span id="likeCount-{{post.id}}">Like: {{post.likes}}</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-warning" onclick="dislikePost({{post.id}})">
+                        <span id="dislikeCount-{{post.id}}">Like: {{post.dislikes}}</span>
+                    </button>
+                </div>
+                <div>
+                    <strong>created_at:</strong> {{post.created_at}}
+                    <strong>updated_at:</strong> {{post.updated_at}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+<style>
+    .blurred-edge {
+        filter: drop-shadow(0 0 100px rgba(0, 0, 0, 200));
+        border-radius: 100%;
+    }
+</style>
+<script>
+    function likePost(postId) {
+        fetch(`/api/posts/${postId}/like`, {
+            method: 'PATCH'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.likes) {
+                document.getElementById(`likeCount-${postId}`).innerText = `Like: ${data.likes}`;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function dislikePost(postId) {
+        fetch(`/api/posts/${postId}/dislike`, {
+            method: 'PATCH'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.dislikes) {
+                document.getElementById(`dislikeCount-${postId}`).innerText = `Like: ${data.dislikes}`;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+
+{% endblock %}
