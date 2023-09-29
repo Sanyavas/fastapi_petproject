@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 # from fastapi_limiter.depends import RateLimiter
 
 from src.schemas import PostModel, PostResponse
-# from src.services.auth import auth_service
+from src.services.auth import auth_service
 from src.database.db import get_db
 from src.database.models import User, Role
 from src.repository import posts as rep_posts
@@ -41,7 +41,8 @@ async def create_post(
 
 
 @router.put("/{post_id}", response_model=PostResponse)
-async def update_post(body: PostModel, post_id: int = Path(ge=0), db: Session = Depends(get_db)):
+async def update_post(body: PostModel, post_id: int = Path(ge=0), db: Session = Depends(get_db),
+                      _: User = Depends(auth_service.get_current_user)):
     post = await rep_posts.update(post_id, body, db)
     if post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found!")
@@ -65,7 +66,8 @@ async def dislike_post(post_id: int = Path(ge=0), db: Session = Depends(get_db))
 
 
 @router.delete("/{post_id}", response_model=PostResponse)
-async def delete_post(post_id: int = Path(ge=0), db: Session = Depends(get_db)):
+async def delete_post(post_id: int = Path(ge=0), db: Session = Depends(get_db),
+                      _: User = Depends(auth_service.get_current_user)):
     post = await rep_posts.remove(post_id, db)
     if post is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not Found!")

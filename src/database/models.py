@@ -3,7 +3,6 @@ import enum
 from sqlalchemy import Column, Integer, String, DateTime, func, Enum, Boolean, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 
-from src.services.random_avatars import random_avatar
 
 Base = declarative_base()
 
@@ -20,11 +19,10 @@ class User(Base):
     username = Column(String(50))
     email = Column(String(250), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
-    avatar = Column(String(255), default=random_avatar)
+    avatar = Column(String(255))
     refresh_token = Column(String(255), nullable=True)
     role = Column('role', Enum(Role), default=Role.user)
     confirmed = Column(Boolean, default=False)
-    posts = relationship('Post', back_populates='author')
 
 
 class Post(Base):
@@ -33,7 +31,7 @@ class Post(Base):
     title = Column(String(255), nullable=False)
     post = Column(String, nullable=False)
     author_id = Column(Integer, ForeignKey('users.id'), nullable=True)
-    author = relationship('User', back_populates='posts')
+    author = relationship('User', backref='posts')
     views = Column(Integer, default=0)
     image_url = Column(String)
     likes = Column(Integer, default=0)

@@ -1,0 +1,83 @@
+<!--{% extends "base.html" %}-->
+
+
+<!--{% block content %}-->
+
+<!--<div class="container">-->
+<!--    <h2>SignUp</h2>-->
+<!--    <form action="/api/auth/login/" method="post">-->
+<!--        <div class="form-group">-->
+<!--            <label for="username">Username:</label>-->
+<!--            <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username here" required>-->
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <label for="password">Password:</label>-->
+<!--            <input class="form-control" id="password" name="password" placeholder="Enter your password here" required>-->
+<!--        </div>-->
+<!--        <button type="submit" class="btn btn-primary">Submit</button>-->
+<!--    </form>-->
+<!--</div>-->
+
+<!--{% endblock %}-->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="up-background"></div>
+<div class="down-background"></div>
+<div class="login-wrapper position-wrapper">
+  <div class="login-block">
+    <h1 class="login-title">Login</h1>
+    <form id="loginForm">
+        <label class="login-label" for="username">Username:</label>
+        <input class="login-input" type="text" id="username" name="username" required><br><br>
+        <label class="login-label" for="password">Password:</label>
+        <input class="login-input" type="password" id="password" name="password" required><br><br>
+        <button class="custom-button" id="submitBtn">Login</button>
+    </form>
+    <div id="error" class="error"></div>
+    <div class="login-footer">
+      <p>If you are not registered, please register here</p>
+      <a class="custom-button" href="/pages/signup">Sign up</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("submitBtn").addEventListener("click", function(event) {
+      event.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const formData = new URLSearchParams();
+      formData.append("grant_type", "password");
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("scope", "default");
+      formData.append("client_id", "your-client-id");
+      formData.append("client_secret", "your-client-secret");
+
+      const body = {
+        username,
+        password
+      }
+
+      fetch("/auth/login", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: formData.toString()
+      })
+      .then(response => response.json())
+      .then(data => {
+          localStorage.setItem("user-api", JSON.stringify(data));
+          if (data.success) {
+              window.location.href = "/pages/upload";
+          } else {
+              document.getElementById("error").textContent = data.detail;
+          }
+      })
+      .catch(error => console.error("Помилка: " + error));
+  });
+</script>
+{% endblock %}

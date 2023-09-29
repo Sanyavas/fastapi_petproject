@@ -13,4 +13,7 @@ avatars = [
     "https://i.pinimg.com/564x/ce/3b/a6/ce3ba6c8b434bd360a8ac93e43354fbd.jpg",
 ]
 
-random_avatar = random.choice(avatars)
+
+def random_avatar():
+    avatar = random.choice(avatars)
+    return avatar
